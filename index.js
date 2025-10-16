@@ -28,13 +28,13 @@ const newDriver = [
         name: "orang 3",
         vehicleType: "Van",
         isAvailable: true,
-        rating: 4.9
+        rating: 4.7
     },
     {
         name: "Orang 4",
-        vehicleType: "Van",
-        isAvailable: true,
-        rating: 4.9
+        vehicleType: "truck",
+        isAvailable: false,
+        rating: 4.2
     }
 ];
 drivers.push(...newDriver);
@@ -71,11 +71,23 @@ async function main() {
         console.log("\n--- Inserting drivers one by one ---\n");
         for (const driver of drivers) {
             const result = await driversCollection.insertOne(driver);
-            console.log(`✅ Inserted driver: ${driver.name} with ID: ${result.insertedId}`);
+            console.log(`--->> Inserted driver: ${driver.name} with ID: ${result.insertedId}`);
         }
 
-        console.log("\nYESS...Document inserted!");
+        console.log("\nYESS...Document inserted!\n");
         
+        //task 4
+        console.log("\n--- Available Drivers (Rating >= 4.5) ---");
+        const finalAvailableDrivers = await driversCollection.find({
+            isAvailable: true,
+            rating: { $gte: 4.5 }
+        }).toArray();
+        
+        console.log(`📊 Found ${finalAvailableDrivers.length} available drivers with rating >= 4.5:`);
+        finalAvailableDrivers.forEach((driver, index) => {
+            console.log(`${index + 1}. ${driver.name} - Rating: ${driver.rating}`);
+        });
+
         // Query the document
         const result = await collection.findOne({ name: "auss" });
         console.log("Query result:", result);
