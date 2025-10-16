@@ -1,0 +1,23 @@
+{
+  "name": "week1-mongodb",
+  "version": "1.0.0",
+  "description": "- muhammad firdaus bin ibrahim\r - b122320044",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aussibrahim/berr2243-NEW.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aussibrahim/berr2243-NEW/issues"
+  },
+  "homepage": "https://github.com/aussibrahim/berr2243-NEW#readme",
+  "dependencies": {
+    "mongodb": "^6.20.0"
+  }
+}
