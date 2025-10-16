@@ -16,11 +16,34 @@ const drivers = [
     }
 ];
 
-// TODO: Show all the drivers name in the console
+// TODO: Show all the drivers 
 console.log("\n--- Driver Names ---");
 drivers.forEach((driver) => {
     console.log(driver.name);
 });
+
+// TODO: Add additional 
+const newDriver = [
+    {
+        name: "orang 3",
+        vehicleType: "Van",
+        isAvailable: true,
+        rating: 4.9
+    },
+    {
+        name: "Orang 4",
+        vehicleType: "Van",
+        isAvailable: true,
+        rating: 4.9
+    }
+];
+drivers.push(...newDriver);
+
+console.log("\n--- After adding new drivers ---");
+drivers.forEach((driver, index) => {
+    console.log(`${index + 1}. ${driver.name}`);  // Now all will show correctly
+});
+
 
 async function main() {
     // Replace with your MongoDB connection string
