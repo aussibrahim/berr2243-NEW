@@ -61,6 +61,10 @@ async function main() {
         const collection = db.collection("users");
         const driversCollection = db.collection("drivers");
 
+        console.log("Clearing ALL existing drivers...");
+        const deleteResult = await driversCollection.deleteMany({});
+        console.log(`Deleted ${deleteResult.deletedCount} existing drivers`);
+
         // Insert a document
         const insertResult = await collection.insertOne({ 
             name: "auss", 
@@ -106,10 +110,30 @@ async function main() {
         console.log(`Orang 1's new rating: ${orang1After.rating}`);
         
         // Show all drivers after update
-        console.log("\n--- All Drivers After Rating Update ---");
+        console.log("\n--- All Drivers After Rating Update ---\n");
         const allDrivers = await driversCollection.find().toArray();
         allDrivers.forEach((driver, index) => {
             console.log(`${index + 1}. ${driver.name} - ${driver.vehicleType} - Rating: ${driver.rating} - Available: ${driver.isAvailable}`);
+        });
+
+        console.log("\nUnavailable Drivers Before Deletion");
+        const unavailableDrivers = await driversCollection.find({
+        isAvailable: false
+        }).toArray();
+        
+        console.log(`Found ${unavailableDrivers.length} unavailable drivers:\n`);
+        unavailableDrivers.forEach((driver, index) => {
+            console.log(`${index + 1}. ${driver.name} - ${driver.vehicleType} - Rating: ${driver.rating}`);
+        });
+
+        console.log("\nAvailable Drivers");
+        const finalDrivers = await driversCollection.find({
+            isAvailable: true
+        }).toArray();
+        
+        console.log(`Driver count: ${finalDrivers.length} available drivers:\n`);
+        finalDrivers.forEach((driver, index) => {
+            console.log(`${index + 1}. ${driver.name} - ${driver.vehicleType} - Rating: ${driver.rating}`);
         });
         
         // Query the document
