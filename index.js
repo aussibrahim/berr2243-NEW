@@ -16,8 +16,11 @@ const drivers = [
     }
 ];
 
-// Show the data in the console
-console.log("All drivers:", drivers);
+// TODO: Show all the drivers name in the console
+console.log("\n--- Driver Names ---");
+drivers.forEach((driver) => {
+    console.log(driver.name);
+});
 
 async function main() {
     // Replace with your MongoDB connection string
