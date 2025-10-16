@@ -1,5 +1,24 @@
 const { MongoClient } = require('mongodb');
 
+// Task 1: Define Drivers
+const drivers = [
+    {
+        name: "Orang 1",
+        vehicleType: "Sedan",
+        isAvailable: true,
+        rating: 4.8
+    },
+    {
+        name: "Orang 2",
+        vehicleType: "SUV",
+        isAvailable: false,
+        rating: 4.5
+    }
+];
+
+// Show the data in the console
+console.log("All drivers:", drivers);
+
 async function main() {
     // Replace with your MongoDB connection string
     const url = "mongodb://localhost:27017"; // For local MongoDB
@@ -17,13 +36,13 @@ async function main() {
         
         // Insert a document
         const insertResult = await collection.insertOne({ 
-            name: "Alice", 
+            name: "auss", 
             age: 25 
         });
         console.log("Document inserted!");
         
         // Query the document
-        const result = await collection.findOne({ name: "Alice" });
+        const result = await collection.findOne({ name: "auss" });
         console.log("Query result:", result);
         
     } catch (err) {
