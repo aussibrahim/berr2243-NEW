@@ -1,152 +1,85 @@
-const { MongoClient } = require('mongodb');
+const express = require('express');
+const { MongoClient, ObjectId } = require('mongodb');
+const port = 3000;
 
-// Task 1: Define Drivers
-const drivers = [
-    {
-        name: "Orang 1",
-        vehicleType: "Sedan",
-        isAvailable: true,
-        rating: 4.8
-    },
-    {
-        name: "Orang 2",
-        vehicleType: "SUV",
-        isAvailable: false,
-        rating: 4.5
-    }
-];
+const app = express();
+app.use(express.json());
 
-// TODO: Show all the drivers 
-console.log("\n--- Driver Names ---");
-drivers.forEach((driver) => {
-    console.log(driver.name);
-});
-
-// TODO: Add additional 
-const newDriver = [
-    {
-        name: "orang 3",
-        vehicleType: "Van",
-        isAvailable: true,
-        rating: 4.7
-    },
-    {
-        name: "Orang 4",
-        vehicleType: "truck",
-        isAvailable: false,
-        rating: 4.2
-    }
-];
-drivers.push(...newDriver);
-
-console.log("\n--- After adding new drivers ---");
-drivers.forEach((driver, index) => {
-    console.log(`${index + 1}. ${driver.name}`);  // Now all will show correctly
-});
-
-
-async function main() {
-    // Replace with your MongoDB connection string
-    const url = "mongodb://localhost:27017"; // For local MongoDB
-    // const url = "mongodb+srv://username:password@cluster.mongodb.net/"; // For Atlas
-    
+let db;
+async function connectToMongoDB() {
+    const url = "mongodb://localhost:27017";
     const client = new MongoClient(url);
-    
+
     try {
-        // Connect to MongoDB
         await client.connect();
-        console.log("\nyeay...Connected to MongoDB!");
-        
-        const db = client.db("testDB");
-        const collection = db.collection("users");
-        const driversCollection = db.collection("drivers");
-
-        console.log("Clearing ALL existing drivers...");
-        const deleteResult = await driversCollection.deleteMany({});
-        console.log(`Deleted ${deleteResult.deletedCount} existing drivers`);
-
-        // Insert a document
-        const insertResult = await collection.insertOne({ 
-            name: "auss", 
-            age: 25 
-        });
-
-         // Method 1: Insert drivers one by one
-        console.log("\n--- Inserting drivers one by one ---\n");
-        for (const driver of drivers) {
-            const result = await driversCollection.insertOne(driver);
-            console.log(`--->> Inserted driver: ${driver.name} with ID: ${result.insertedId}`);
-        }
-
-        console.log("\nYESS...Document inserted!\n");
-        
-        //task 4
-        console.log("finding...Available Drivers (Rating > 4.5)...");
-        const finalAvailableDrivers = await driversCollection.find({
-            isAvailable: true,
-            rating: { $gte: 4.5 }
-        }).toArray();
-        
-        console.log(`Found ${finalAvailableDrivers.length} available drivers with rating > 4.5:\n`);
-        finalAvailableDrivers.forEach((driver, index) => {
-            console.log(`${index + 1}. ${driver.name} - Rating: ${driver.rating}\n`);
-        });
-        
-        // Show Orang 1's current rating
-        const orang1Before = await driversCollection.findOne({ name: "Orang 1" });
-        console.log(`\nupdating Orang 1's current rating: ${orang1Before.rating}....`);
-        
-        // Update: Increase Orang 1's rating by 0.1
-        console.log("\nIncreasing Orang 1's rating by 0.1...\n");
-        const updateResult = await driversCollection.updateOne(
-            { name: "Orang 1" },  // Find Orang 1
-            { $inc: { rating: 0.1 } }  // Increase rating by 0.1
-        );
-        
-        console.log(`Update result - Matched: ${updateResult.matchedCount}, Modified: ${updateResult.modifiedCount}`);
-        
-        // Verify the update - Find Orang 1 again
-        const orang1After = await driversCollection.findOne({ name: "Orang 1" });
-        console.log(`Orang 1's new rating: ${orang1After.rating}`);
-        
-        // Show all drivers after update
-        console.log("\n--- All Drivers After Rating Update ---\n");
-        const allDrivers = await driversCollection.find().toArray();
-        allDrivers.forEach((driver, index) => {
-            console.log(`${index + 1}. ${driver.name} - ${driver.vehicleType} - Rating: ${driver.rating} - Available: ${driver.isAvailable}`);
-        });
-
-        console.log("\nUnavailable Drivers Before Deletion");
-        const unavailableDrivers = await driversCollection.find({
-        isAvailable: false
-        }).toArray();
-        
-        console.log(`Found ${unavailableDrivers.length} unavailable drivers:\n`);
-        unavailableDrivers.forEach((driver, index) => {
-            console.log(`${index + 1}. ${driver.name} - ${driver.vehicleType} - Rating: ${driver.rating}`);
-        });
-
-        console.log("\nAvailable Drivers");
-        const finalDrivers = await driversCollection.find({
-            isAvailable: true
-        }).toArray();
-        
-        console.log(`Driver count: ${finalDrivers.length} available drivers:\n`);
-        finalDrivers.forEach((driver, index) => {
-            console.log(`${index + 1}. ${driver.name} - ${driver.vehicleType} - Rating: ${driver.rating}`);
-        });
-        
-        // Query the document
-        const result = await collection.findOne({ name: "auss" });
-        console.log("Query result:", result);
-        
+        console.log("Connected to MongoDB!");
+        db = client.db("testDB");
     } catch (err) {
         console.error("Error:", err);
-    } finally {
-        // Close connection
-        await client.close();
     }
 }
 
-// Run main function
-main().catch(console.error);
+// Call function to connect to MongoDB
+connectToMongoDB();
+
+//RIDE ENDPOINTS
+
+// 1. GET /rides – Fetch All Rides
+app.get('/rides', async (req, res) => {
+    try {
+        const rides = await db.collection('rides').find().toArray();
+        res.status(200).json(rides);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch rides" });
+    }
+});
+
+// 2. POST /rides - Create a New Ride
+app.post('/rides', async (req, res) => {
+    try {
+        const result = await db.collection('rides').insertOne(req.body);
+        res.status(201).json({ id: result.insertedId });
+    } catch (err) {
+        res.status(400).json({ error: "Invalid ride data" });
+    }
+});
+
+// 3. PATCH but in task ask (put) /rides/:id - Update Ride Status
+app.put('/rides/:id', async (req, res) => {
+    try {
+        const result = await db.collection('rides').updateOne(
+            { _id: new ObjectId(req.params.id) },
+            { $set: { status: req.body.status } }
+        );
+        
+        if (result.modifiedCount === 0) {
+            return res.status(404).json({ error: "Ride not found" });
+        }
+        
+        res.status(200).json({ updated: result.modifiedCount });
+    } catch (err) {
+        res.status(400).json({ error: "Invalid ride ID or data" });
+    }
+});
+
+// 4. DELETE /rides/:id - Cancel a Ride
+app.delete('/rides/:id', async (req, res) => {
+    try {
+        const result = await db.collection('rides').deleteOne(
+            { _id: new ObjectId(req.params.id) }
+        );
+        
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ error: "Ride not found" });
+        }
+        
+        res.status(200).json({ deleted: result.deletedCount });
+    } catch (err) {
+        res.status(400).json({ error: "Invalid ride ID" });
+    }
+});
+
+// Start server
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
