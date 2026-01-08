@@ -18,7 +18,10 @@
   },
   "homepage": "https://github.com/aussibrahim/berr2243-NEW#readme",
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "mongodb": "^6.20.0"
+    "jsonwebtoken": "^9.0.3",
+    "mongodb": "^6.21.0"
   }
 }
